@@ -5,6 +5,7 @@ from email.header import decode_header
 import time
 from geopy.geocoders import Nominatim
 import json
+from reservation import create_reservation
 import sqlite3
 import re
 import os
@@ -38,11 +39,6 @@ def get_location_id_by_address(address):
     # Return location_id if found, else None
     return result[0] if result else None
 
-
-
-
-
-
 def configure_gemini():
     """Configures Gemini API"""
     genai.configure(api_key=os.getenv('GENAI_API_KEY'))
@@ -72,7 +68,7 @@ def extract_reservation_info(email_text):
 
     prompt = f"""
     Extract hotel reservation details from this email.
-    Return the details in JSON format with these fields:
+    Return the details in JSON format with these fields, the check in and check out time should be in the format YYYY-MM-DDTHH:MM:SS±HH:MM
     Also give me the latitude and longitude of the location, and the zipcode of the location if it is not present in the mail
     - hotel_name
     - location
@@ -81,11 +77,10 @@ def extract_reservation_info(email_text):
     - country
     - check_in
     - check_out
-    - zip code (if present in the mail)
+    - zip_code (if present in the mail)
     - reservation_number
     - latitude
     - lognitude
-    - zip code
 
     Email:
     {email_text}
@@ -146,14 +141,21 @@ def check_email():
 
                     location_id = get_location_id_by_address(address)
                     print(location_id)
+                    print(type(info.get('check_in')))
+
+                    if(location_id):
+                        print('creating reservation')
+                        res = create_reservation(location_id, info.get('check_in'), info.get('check_out'))
+                        print(res)
 
         mail.logout()
     except Exception as e:
         print(f"Error: {e}")
+
 
 if __name__ == "__main__":
     configure_gemini()  # Initialize Gemini API
     while True:
         print('Reading Email Data')
         check_email()
-        time.sleep(10)  # Check every 60 seconds
+        time.sleep(10) 
