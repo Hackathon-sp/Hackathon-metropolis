@@ -1,11 +1,10 @@
 import requests 
-from send_email import send_confirmation_email  
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-def create_reservation(location_code, contact_number, first_name, email, start_at, stop_at):
+def create_reservation(location_code,  start_at, stop_at, contact_number = "9123456789", first_name= 'xxx', email = 'xxx@email.com',):
     """Create a reservation by calling the external API."""
     url = "https://dev.parking.dev/v4/reservation"
     headers = {
@@ -17,7 +16,7 @@ def create_reservation(location_code, contact_number, first_name, email, start_a
     payload = {
         
         "orderType": "RESERVATION",
-        "location": "99999",
+        "location": location_code,
         "name": first_name,
         "countryCode": "+91",
         "email": email,
