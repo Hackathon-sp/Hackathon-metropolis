@@ -5,17 +5,47 @@ from email.header import decode_header
 import time
 from geopy.geocoders import Nominatim
 import json
-# Email account credentials
-EMAIL_HOST = "imap.gmail.com"
-EMAIL_USER = "hackathon949@gmail.com"
-EMAIL_PASS = "fsgs iiqs jfsf fhnn"
+import sqlite3
+import re
+import os
+from dotenv import load_dotenv
 
-# Gemini API Key
-GENAI_API_KEY = "AIzaSyCVyCvxN2G9IaDcwSadza53fJCoqFCEUe4"
+load_dotenv()
+
+def clean_json_string(json_text):
+    """Removes triple backticks and 'json' label using regex."""
+    return re.sub(r"^```json|```$", "", json_text.strip()).strip()
+
+def get_location_id_by_address(address):
+    """Fetch location_id from the SQLite database using the hotel address."""
+
+    print(address)
+    
+    # Connect to SQLite database
+    conn = sqlite3.connect("hotel.db")
+    cursor = conn.cursor()
+
+    # SQL query to find the location_id
+    query = "SELECT location_id FROM HOTEL WHERE hotel_address = ?"
+    cursor.execute(query, (address,))
+    
+    # Fetch the result
+    result = cursor.fetchone()
+    
+    # Close connection
+    conn.close()
+
+    # Return location_id if found, else None
+    return result[0] if result else None
+
+
+
+
+
 
 def configure_gemini():
     """Configures Gemini API"""
-    genai.configure(api_key=GENAI_API_KEY)
+    genai.configure(api_key=os.getenv('GENAI_API_KEY'))
 
 def extract_email_body(msg):
     """Extracts the plain text body from an email."""
@@ -43,16 +73,16 @@ def extract_reservation_info(email_text):
     prompt = f"""
     Extract hotel reservation details from this email.
     Return the details in JSON format with these fields:
+    Also give me the latitude and longitude of the location, and the zipcode of the location if it is not present in the mail
     - hotel_name
     - location
     - city
     - state
+    - country
     - check_in
     - check_out
     - zip code (if present in the mail)
     - reservation_number
-
-    Also give me the latitude and longitude of the location, and the zipcode of the location if it is not present in the mail
     - latitude
     - lognitude
     - zip code
@@ -65,11 +95,22 @@ def extract_reservation_info(email_text):
 
     return response.text  # Returns JSON output from Gemini
 
+def extract_address(data):
+    location = data.get("location", "")
+    city = data.get("city", "")
+    state = data.get("state", "")
+    country = data.get("country", "")
+    zipcode= data.get("zip_code","")
+    
+    # Combine the extracted data into an address string
+    address = f"{location}, {city}, {state} {zipcode}, {country}"
+    return address
+
 def check_email():
     try:
         # Connect to IMAP server
-        mail = imaplib.IMAP4_SSL(EMAIL_HOST)
-        mail.login(EMAIL_USER, EMAIL_PASS)
+        mail = imaplib.IMAP4_SSL(os.getenv('EMAIL_HOST'))
+        mail.login(os.getenv('EMAIL_USER'), os.getenv('EMAIL_PASS'))
         mail.select("inbox")
 
         # Search for unread emails
@@ -94,33 +135,25 @@ def check_email():
 
                     # Send email body to Gemini API
                     reservation_info = extract_reservation_info(email_body)
+
+
+                    res_string = clean_json_string(reservation_info)
                     print("Extracted Reservation Info:", reservation_info)
 
-                    # print(type(reservation_info))
+                    info = json.loads(res_string)
+                    address= extract_address(info)
+                    print(address)
 
-                    # json_data = json.loads(reservation_info)
-
-                    # getLatLong(json_data)
+                    location_id = get_location_id_by_address(address)
+                    print(location_id)
 
         mail.logout()
     except Exception as e:
         print(f"Error: {e}")
-
-# def getLatLong(body):
-#     print('inside lat long')
-#     geolocator = Nominatim(user_agent = "hotel_locator")
-#     address = body.location + ','+ body.city + body.state
-#     print(address)
-#     location = geolocator.geocode(address)
-#     if(location):
-#         print(location.latitude)
-#         print(location.longitude)
-#     else:
-#         print('adf')
 
 if __name__ == "__main__":
     configure_gemini()  # Initialize Gemini API
     while True:
         print('Reading Email Data')
         check_email()
-        time.sleep(60)  # Check every 60 seconds
+        time.sleep(10)  # Check every 60 seconds
