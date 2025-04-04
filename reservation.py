@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def create_reservation(location_code,  start_at, stop_at, contact_number = "9123456789", first_name= 'xxx', email = 'xxx@email.com',):
+def create_reservation(location_code,  start_at, stop_at, contact_number = "9123456789", first_name= 'Hackathon', email = 'hackathon@email.com',):
     """Create a reservation by calling the external API."""
 
     print('inside create_reservation')
