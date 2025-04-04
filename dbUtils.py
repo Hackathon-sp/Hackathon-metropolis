@@ -46,7 +46,6 @@ def getLocationByLatLong(latitude, longitude):
     cursor.execute(query, (latitude, longitude, latitude))
     result = cursor.fetchone()
     conn.close()
-    print(result)
     return result[0] if result else None
 
 def get_location_address(location_id):
@@ -63,5 +62,4 @@ def get_location_address(location_id):
     cursor.execute(query, (location_id,))
     result = cursor.fetchone()
     conn.close()
-    print(result)
     return result[0] if result else None

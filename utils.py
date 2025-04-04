@@ -12,7 +12,7 @@ def clean_json_string(json_text):
 def extract_reservation_info(email_text):
     """Sends the email text to Gemini API for processing."""
 
-    print('Inside extract res info')
+    print('Extracting Reservation Info')
     
     model = genai.GenerativeModel("gemini-1.5-pro")
 

@@ -7,4 +7,4 @@ if __name__ == "__main__":
     while True:
         print("Reading Email Data")
         check_email()
-        time.sleep(10)
+        time.sleep(5)

@@ -47,8 +47,9 @@ def check_email():
                         res = create_reservation(location_id, info.get("check_in"), info.get("check_out"))
                         startTime = format_datetime(info.get("check_in"))
                         endTime = format_datetime(info.get("check_out"))
-                        send_confirmation_email("sjha@spplus.com", locationAddress, startTime, endTime)
                         print(res)
+                        send_confirmation_email("sjha@spplus.com", locationAddress, startTime, endTime)
+
                     else:
                         print("Could not find any location")
 
