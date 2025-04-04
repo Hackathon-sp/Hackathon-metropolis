@@ -49,11 +49,13 @@ def extract_reservation_info(email_text):
     - state
     - check_in
     - check_out
+    - zip code (if present in the mail)
     - reservation_number
 
-    Also give me the latitude and longitude of the location
+    Also give me the latitude and longitude of the location, and the zipcode of the location if it is not present in the mail
     - latitude
     - lognitude
+    - zip code
 
     Email:
     {email_text}
@@ -94,27 +96,27 @@ def check_email():
                     reservation_info = extract_reservation_info(email_body)
                     print("Extracted Reservation Info:", reservation_info)
 
-                    print(type(reservation_info))
+                    # print(type(reservation_info))
 
-                    json_data = json.loads(reservation_info)
+                    # json_data = json.loads(reservation_info)
 
-                    getLatLong(json_data)
+                    # getLatLong(json_data)
 
         mail.logout()
     except Exception as e:
         print(f"Error: {e}")
 
-def getLatLong(body):
-    print('inside lat long')
-    geolocator = Nominatim(user_agent = "hotel_locator")
-    address = body.location + ','+ body.city + body.state
-    print(address)
-    location = geolocator.geocode(address)
-    if(location):
-        print(location.latitude)
-        print(location.longitude)
-    else:
-        print('adf')
+# def getLatLong(body):
+#     print('inside lat long')
+#     geolocator = Nominatim(user_agent = "hotel_locator")
+#     address = body.location + ','+ body.city + body.state
+#     print(address)
+#     location = geolocator.geocode(address)
+#     if(location):
+#         print(location.latitude)
+#         print(location.longitude)
+#     else:
+#         print('adf')
 
 if __name__ == "__main__":
     configure_gemini()  # Initialize Gemini API
