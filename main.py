@@ -10,6 +10,7 @@ import sqlite3
 import re
 import os
 from dotenv import load_dotenv
+from getLoc import getLocationByLatLong
 
 load_dotenv()
 
@@ -145,13 +146,18 @@ def check_email():
                     print(address)
 
                     location_id = get_location_id_by_address(address)
-                    print(location_id)
-                    print(type(info.get('check_in')))
+                    if(location_id==None):
+                       latitude= info.get("latitude","")
+                       longitude = info.get("longitude","")
+                       location_id = getLocationByLatLong(latitude, longitude)
 
                     if(location_id):
                         print('creating reservation')
                         res = create_reservation(location_id, info.get('check_in'), info.get('check_out'))
                         print(res)
+                    else:
+                        print("Could not find any location")
+
 
         mail.logout()
     except Exception as e:
@@ -159,7 +165,7 @@ def check_email():
 
 
 if __name__ == "__main__":
-    configure_gemini()  # Initialize Gemini API
+    configure_gemini()  
     while True:
         print('Reading Email Data')
         check_email()

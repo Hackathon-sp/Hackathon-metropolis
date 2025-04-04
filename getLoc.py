@@ -10,7 +10,6 @@ DB_CONFIG = {
     "password": os.getenv("DB_PASSWORD"),
 }
 
-print(DB_CONFIG)
 
 def getLocationByLatLong(latitude , longitude):
     """Fetch location_id from MySQL using an exact match for the address."""
@@ -41,6 +40,3 @@ def getLocationByLatLong(latitude , longitude):
     print(result)
 
     return result[0] if result else None
-
-loc = getLocationByLatLong(33.5138789, -86.814522)
-print(loc)
