@@ -4,8 +4,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def create_reservation(location,  startAt, stopAt, contactNumber = "9123456789", name= 'xxx', email = 'xxx@email.com',):
+def create_reservation(location_code,  start_at, stop_at, contact_number = "9123456789", first_name= 'Hackathon', email = 'hackathon@email.com',):
     """Create a reservation by calling the external API."""
+
+    print('Inside create_reservation')
     url = "https://dev.parking.dev/v4/reservation"
     headers = {
         "Content-Type": "application/json",
@@ -16,13 +18,13 @@ def create_reservation(location,  startAt, stopAt, contactNumber = "9123456789",
     payload = {
         
         "orderType": "RESERVATION",
-        "location": location,
-        "name": name,
+        "location": location_code,
+        "name": first_name,
         "countryCode": "+91",
         "email": email,
-        "contactNumber": contactNumber,
-        "startAt": startAt,
-        "stopAt": stopAt,
+        "contactNumber": contact_number,
+        "startAt": start_at,
+        "stopAt": stop_at,
     }
     print('Creating reservation')
     response = requests.post(url, headers=headers, json=payload)  
