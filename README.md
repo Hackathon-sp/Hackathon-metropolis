@@ -13,6 +13,6 @@ This project automatically reads hotel reservation emails, extracts relevant boo
 3. Uses Google Gemini to extract structured reservation info from raw email text.
 4. Matches the reservation address with known locations using:
    - SQLite (local `hotel.db`)
-   - Aurora MySQL (via latitude/longitude)
+   - latitude/longitude
 5. Creates a reservation.
 6. Sends a confirmation email with reservation details.
