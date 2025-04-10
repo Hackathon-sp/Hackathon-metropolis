@@ -1,4 +1,3 @@
-# Hackathon-metropolis
 
 # Hotel Reservation Email Parser 🏨📩
 
