@@ -22,8 +22,7 @@ This project automatically reads hotel reservation emails, extracts relevant boo
 
 ### 1. Clone the repo
 ```
-git clone <your-repo-url>
-cd project/
+git clone https://github.com/Hackathon-sp/Hackathon-metropolis.git
 ```
 
 ### 2. Create a virtual environment
